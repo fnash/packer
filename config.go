@@ -269,6 +269,68 @@ func (c *config) discoverExternalComponents(path string) error {
 		externallyUsed = nil
 	}
 
+	pluginPaths, err = c.discoverSingle(filepath.Join(path, "packer-plugin-*"))
+	if err != nil {
+		return err
+	}
+
+	for pluginName, pluginPath := range pluginPaths {
+		if err := c.discoverMultiPlugin(pluginName, pluginPath); err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+// discoverMultiPlugin takes the description from a multiplugin binary and
+// makes the plugins available to use in Packer. Each plugin found in the
+// binary will be addressable using `${pluginName}-${builderName}` for example.
+// pluginName could be manually set. It usually is a cloud name like amazon.
+// pluginName can be extrapolated from the filename of the binary; so
+// if the "packer-plugin-amazon" binary had an "ebs" builder one could use
+// the "amazon-ebs" builder.
+func (c *config) discoverMultiPlugin(pluginName, pluginPath string) error {
+	out, err := exec.Command(pluginPath, "describe").Output()
+	if err != nil {
+		return err
+	}
+	var desc plugin.Description
+	if err := json.Unmarshal(out, &desc); err != nil {
+		return err
+	}
+
+	pluginPrefix := pluginName + "-"
+
+	for _, builderName := range desc.Builders {
+		builderName := builderName // copy to avoid pointer overwrite issue
+		c.Builders[pluginPrefix+builderName] = func() (packer.Builder, error) {
+			return c.pluginClient(pluginPath, "start", "builder", builderName).Builder()
+		}
+	}
+	if len(desc.Builders) > 0 {
+		log.Printf("found external %v builders from %s", desc.Builders, pluginName)
+	}
+
+	for _, postProcessorName := range desc.PostProcessors {
+		postProcessorName := postProcessorName // copy to avoid pointer overwrite issue
+		c.PostProcessors[pluginPrefix+postProcessorName] = func() (packer.PostProcessor, error) {
+			return c.pluginClient(pluginPath, "start", "post-processor", postProcessorName).PostProcessor()
+		}
+	}
+	if len(desc.PostProcessors) > 0 {
+		log.Printf("found external %v post-processors from %s", desc.PostProcessors, pluginName)
+	}
+
+	for _, provisionerName := range desc.Provisioners {
+		provisionerName := provisionerName // copy to avoid pointer overwrite issue
+		c.Provisioners[pluginPrefix+provisionerName] = func() (packer.Provisioner, error) {
+			return c.pluginClient(pluginPath, "start", "provisioner", provisionerName).Provisioner()
+		}
+	}
+	if len(desc.Provisioners) > 0 {
+		log.Printf("found external %v provisioner from %s", desc.Provisioners, pluginName)
+	}
+
 	return nil
 }
 
@@ -301,6 +363,11 @@ func (c *config) discoverSingle(glob string) (map[string]string, error) {
 
 		// Look for foo-bar-baz. The plugin name is "baz"
 		pluginName := file[len(prefix):]
+
+		// avoid folders like packer-plugin-sdk
+		if stat, err := os.Stat(file); err == nil && stat.IsDir() {
+			continue
+		}
 		log.Printf("[DEBUG] Discovered plugin: %s = %s", pluginName, match)
 		res[pluginName] = match
 	}
@@ -355,11 +422,10 @@ func (c *config) discoverInternalComponents() error {
 	return nil
 }
 
-func (c *config) pluginClient(path string) *plugin.Client {
+func (c *config) pluginClient(path string, args ...string) *plugin.Client {
 	originalPath := path
 
 	// Check for special case using `packer plugin PLUGIN`
-	args := []string{}
 	if strings.Contains(path, PACKERSPACE) {
 		parts := strings.Split(path, PACKERSPACE)
 		path = parts[0]
@@ -387,7 +453,7 @@ func (c *config) pluginClient(path string) *plugin.Client {
 		path = originalPath
 	}
 
-	log.Printf("Creating plugin client for path: %s", path)
+	log.Printf("Creating plugin client for path: %s %v", path, args)
 	var config plugin.ClientConfig
 	config.Cmd = exec.Command(path, args...)
 	config.Managed = true
