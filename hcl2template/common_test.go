@@ -7,6 +7,7 @@ import (
 	"github.com/google/go-cmp/cmp"
 	"github.com/google/go-cmp/cmp/cmpopts"
 
+	"github.com/hashicorp/go-version"
 	"github.com/hashicorp/hcl/v2"
 	"github.com/hashicorp/hcl/v2/hclparse"
 	"github.com/hashicorp/packer/builder/null"
@@ -16,9 +17,13 @@ import (
 	"github.com/zclconf/go-cty/cty"
 )
 
+const lockedVersion = "v1.5.0"
+
 func getBasicParser() *Parser {
 	return &Parser{
-		Parser: hclparse.NewParser(),
+		CorePackerVersion:       version.Must(version.NewSemver(lockedVersion)),
+		CorePackerVersionString: lockedVersion,
+		Parser:                  hclparse.NewParser(),
 		BuilderSchemas: packer.MapOfBuilder{
 			"amazon-ebs":     func() (packer.Builder, error) { return &MockBuilder{}, nil },
 			"virtualbox-iso": func() (packer.Builder, error) { return &MockBuilder{}, nil },
@@ -234,6 +239,7 @@ var cmpOpts = []cmp.Option{
 		packer.CoreBuildProvisioner{},
 		packer.CoreBuildPostProcessor{},
 		null.Builder{},
+		version.Constraint{},
 	),
 	cmpopts.IgnoreFields(PackerConfig{},
 		"Cwd", // Cwd will change for every os type

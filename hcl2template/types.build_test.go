@@ -16,7 +16,8 @@ func TestParse_build(t *testing.T) {
 			defaultParser,
 			parseTestArgs{"testdata/build/basic.pkr.hcl", nil, nil},
 			&PackerConfig{
-				Basedir: filepath.Join("testdata", "build"),
+				CorePackerVersionString: lockedVersion,
+				Basedir:                 filepath.Join("testdata", "build"),
 				Builds: Builds{
 					&BuildBlock{
 						Sources: []SourceRef{
@@ -52,8 +53,9 @@ func TestParse_build(t *testing.T) {
 			defaultParser,
 			parseTestArgs{"testdata/build/provisioner_untyped.pkr.hcl", nil, nil},
 			&PackerConfig{
-				Basedir: filepath.Join("testdata", "build"),
-				Builds:  nil,
+				CorePackerVersionString: lockedVersion,
+				Basedir:                 filepath.Join("testdata", "build"),
+				Builds:                  nil,
 			},
 			true, true,
 			nil,
@@ -63,8 +65,9 @@ func TestParse_build(t *testing.T) {
 			defaultParser,
 			parseTestArgs{"testdata/build/provisioner_inexistent.pkr.hcl", nil, nil},
 			&PackerConfig{
-				Basedir: filepath.Join("testdata", "build"),
-				Builds:  nil,
+				CorePackerVersionString: lockedVersion,
+				Basedir:                 filepath.Join("testdata", "build"),
+				Builds:                  nil,
 			},
 			true, true,
 			[]packer.Build{&packer.CoreBuild{}},
@@ -74,8 +77,9 @@ func TestParse_build(t *testing.T) {
 			defaultParser,
 			parseTestArgs{"testdata/build/post-processor_untyped.pkr.hcl", nil, nil},
 			&PackerConfig{
-				Basedir: filepath.Join("testdata", "build"),
-				Builds:  nil,
+				CorePackerVersionString: lockedVersion,
+				Basedir:                 filepath.Join("testdata", "build"),
+				Builds:                  nil,
 			},
 			true, true,
 			[]packer.Build{&packer.CoreBuild{}},
@@ -85,8 +89,9 @@ func TestParse_build(t *testing.T) {
 			defaultParser,
 			parseTestArgs{"testdata/build/post-processor_inexistent.pkr.hcl", nil, nil},
 			&PackerConfig{
-				Basedir: filepath.Join("testdata", "build"),
-				Builds:  nil,
+				CorePackerVersionString: lockedVersion,
+				Basedir:                 filepath.Join("testdata", "build"),
+				Builds:                  nil,
 			},
 			true, true,
 			[]packer.Build{},
@@ -96,8 +101,9 @@ func TestParse_build(t *testing.T) {
 			defaultParser,
 			parseTestArgs{"testdata/build/invalid_source_reference.pkr.hcl", nil, nil},
 			&PackerConfig{
-				Basedir: filepath.Join("testdata", "build"),
-				Builds:  nil,
+				CorePackerVersionString: lockedVersion,
+				Basedir:                 filepath.Join("testdata", "build"),
+				Builds:                  nil,
 			},
 			true, true,
 			[]packer.Build{},
@@ -107,7 +113,8 @@ func TestParse_build(t *testing.T) {
 			defaultParser,
 			parseTestArgs{"testdata/build/named.pkr.hcl", nil, nil},
 			&PackerConfig{
-				Basedir: filepath.Join("testdata", "build"),
+				CorePackerVersionString: lockedVersion,
+				Basedir:                 filepath.Join("testdata", "build"),
 				Builds: Builds{
 					&BuildBlock{
 						Name: "somebuild",
@@ -129,7 +136,8 @@ func TestParse_build(t *testing.T) {
 			defaultParser,
 			parseTestArgs{"testdata/build/post-processor_onlyexcept.pkr.hcl", nil, nil},
 			&PackerConfig{
-				Basedir: filepath.Join("testdata", "build"),
+				CorePackerVersionString: lockedVersion,
+				Basedir:                 filepath.Join("testdata", "build"),
 				Sources: map[SourceRef]SourceBlock{
 					refVBIsoUbuntu1204:  {Type: "virtualbox-iso", Name: "ubuntu-1204"},
 					refAWSEBSUbuntu1604: {Type: "amazon-ebs", Name: "ubuntu-1604"},
@@ -247,7 +255,8 @@ func TestParse_build(t *testing.T) {
 			defaultParser,
 			parseTestArgs{"testdata/build/provisioner_onlyexcept.pkr.hcl", nil, nil},
 			&PackerConfig{
-				Basedir: filepath.Join("testdata", "build"),
+				CorePackerVersionString: lockedVersion,
+				Basedir:                 filepath.Join("testdata", "build"),
 				Sources: map[SourceRef]SourceBlock{
 					refVBIsoUbuntu1204:  {Type: "virtualbox-iso", Name: "ubuntu-1204"},
 					refAWSEBSUbuntu1604: {Type: "amazon-ebs", Name: "ubuntu-1604"},
