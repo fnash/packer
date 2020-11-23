@@ -4,6 +4,7 @@ import (
 	"testing"
 
 	"github.com/hashicorp/go-version"
+	"github.com/hashicorp/packer/hcl2template/addrs"
 	. "github.com/hashicorp/packer/hcl2template/internal"
 	"github.com/hashicorp/packer/packer"
 	"github.com/zclconf/go-cty/cty"
@@ -23,10 +24,31 @@ func TestParser_complete(t *testing.T) {
 			defaultParser,
 			parseTestArgs{"testdata/complete", nil, nil},
 			&PackerConfig{
-				Packer: struct{ VersionConstraints []VersionConstraint }{
+				Packer: struct {
+					VersionConstraints []VersionConstraint
+					RequiredPlugins    []*RequiredPlugins
+				}{
 					VersionConstraints: []VersionConstraint{
 						VersionConstraint{
 							Required: mustVersionConstraints(version.NewConstraint(">= v1")),
+						},
+					},
+					RequiredPlugins: []*RequiredPlugins{
+						&RequiredPlugins{
+							RequiredPlugins: map[string]*RequiredPlugin{
+								"amazon": &RequiredPlugin{
+									Name:   "amazon",
+									Source: "amazon",
+									Type: &addrs.Plugin{
+										Type:      "amazon",
+										Namespace: "hashicorp",
+										Hostname:  "github.com",
+									},
+									Requirement: VersionConstraint{
+										Required: mustVersionConstraints(version.NewConstraint(">= v1")),
+									},
+								},
+							},
 						},
 					},
 				},
