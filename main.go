@@ -302,9 +302,9 @@ func loadConfig() (*config, error) {
 	var config config
 	config.PluginMinPort = 10000
 	config.PluginMaxPort = 25000
-	config.Builders = packer.MapOfBuilder{}
-	config.PostProcessors = packer.MapOfPostProcessor{}
-	config.Provisioners = packer.MapOfProvisioner{}
+	config.Builders = packersdk.MapOfBuilder{}
+	config.PostProcessors = packersdk.MapOfPostProcessor{}
+	config.Provisioners = packersdk.MapOfProvisioner{}
 	if err := config.Discover(); err != nil {
 		return nil, err
 	}

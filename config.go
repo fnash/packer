@@ -27,12 +27,12 @@ type config struct {
 	DisableCheckpointSignature bool `json:"disable_checkpoint_signature"`
 	PluginMinPort              int
 	PluginMaxPort              int
-	RawBuilders                map[string]string         `json:"builders"`
-	RawProvisioners            map[string]string         `json:"provisioners"`
-	RawPostProcessors          map[string]string         `json:"post-processors"`
-	Builders                   packer.MapOfBuilder       `json:"-"`
-	Provisioners               packer.MapOfProvisioner   `json:"-"`
-	PostProcessors             packer.MapOfPostProcessor `json:"-"`
+	RawBuilders                map[string]string            `json:"builders"`
+	RawProvisioners            map[string]string            `json:"provisioners"`
+	RawPostProcessors          map[string]string            `json:"post-processors"`
+	Builders                   packersdk.MapOfBuilder       `json:"-"`
+	Provisioners               packersdk.MapOfProvisioner   `json:"-"`
+	PostProcessors             packersdk.MapOfPostProcessor `json:"-"`
 }
 
 // decodeConfig decodes configuration in JSON format from the given io.Reader into

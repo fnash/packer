@@ -11,7 +11,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/hashicorp/packer/packer"
+	packersdk "github.com/hashicorp/packer/packer-plugin-sdk/packer"
 	"github.com/hashicorp/packer/packer/plugin"
 )
 
@@ -19,9 +19,9 @@ func newConfig() config {
 	var conf config
 	conf.PluginMinPort = 10000
 	conf.PluginMaxPort = 25000
-	conf.Builders = packer.MapOfBuilder{}
-	conf.PostProcessors = packer.MapOfPostProcessor{}
-	conf.Provisioners = packer.MapOfProvisioner{}
+	conf.Builders = packersdk.MapOfBuilder{}
+	conf.PostProcessors = packersdk.MapOfPostProcessor{}
+	conf.Provisioners = packersdk.MapOfProvisioner{}
 
 	return conf
 }
@@ -148,9 +148,9 @@ func TestLoadExternalComponentsFromConfig(t *testing.T) {
 	defer cleanUpFunc()
 
 	var cfg config
-	cfg.Builders = packer.MapOfBuilder{}
-	cfg.PostProcessors = packer.MapOfPostProcessor{}
-	cfg.Provisioners = packer.MapOfProvisioner{}
+	cfg.Builders = packersdk.MapOfBuilder{}
+	cfg.PostProcessors = packersdk.MapOfPostProcessor{}
+	cfg.Provisioners = packersdk.MapOfProvisioner{}
 
 	if err := decodeConfig(strings.NewReader(packerConfigData), &cfg); err != nil {
 		t.Fatalf("error encountered decoding configuration: %v", err)
@@ -180,7 +180,7 @@ func TestLoadExternalComponentsFromConfig_onlyProvisioner(t *testing.T) {
 	defer cleanUpFunc()
 
 	var cfg config
-	cfg.Provisioners = packer.MapOfProvisioner{}
+	cfg.Provisioners = packersdk.MapOfProvisioner{}
 
 	if err := decodeConfig(strings.NewReader(packerConfigData), &cfg); err != nil {
 		t.Fatalf("error encountered decoding configuration: %v", err)
@@ -225,9 +225,9 @@ func TestLoadSingleComponent(t *testing.T) {
 	}
 
 	var cfg config
-	cfg.Builders = packer.MapOfBuilder{}
-	cfg.PostProcessors = packer.MapOfPostProcessor{}
-	cfg.Provisioners = packer.MapOfProvisioner{}
+	cfg.Builders = packersdk.MapOfBuilder{}
+	cfg.PostProcessors = packersdk.MapOfPostProcessor{}
+	cfg.Provisioners = packersdk.MapOfProvisioner{}
 
 	for _, tc := range tt {
 		tc := tc
