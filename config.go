@@ -13,8 +13,8 @@ import (
 	"strings"
 
 	"github.com/hashicorp/packer/command"
-	"github.com/hashicorp/packer/packer"
 	packersdk "github.com/hashicorp/packer/packer-plugin-sdk/packer"
+	"github.com/hashicorp/packer/packer-plugin-sdk/pathing"
 	"github.com/hashicorp/packer/packer/plugin"
 )
 
@@ -141,7 +141,7 @@ func (c *config) Discover() error {
 	}
 
 	// Next, look in the default plugins directory inside the configdir/.packer.d/plugins.
-	dir, err := packer.ConfigDir()
+	dir, err := pathing.ConfigDir()
 	if err != nil {
 		log.Printf("[ERR] Error loading config directory: %s", err)
 	} else {

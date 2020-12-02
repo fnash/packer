@@ -20,6 +20,7 @@ import (
 	"github.com/hashicorp/packer/command"
 	"github.com/hashicorp/packer/packer"
 	packersdk "github.com/hashicorp/packer/packer-plugin-sdk/packer"
+	"github.com/hashicorp/packer/packer-plugin-sdk/pathing"
 	"github.com/hashicorp/packer/packer-plugin-sdk/tmp"
 	"github.com/hashicorp/packer/packer/plugin"
 	"github.com/hashicorp/packer/version"
@@ -316,7 +317,7 @@ func loadConfig() (*config, error) {
 	if configFilePath == "" {
 		var err error
 		log.Print("'PACKER_CONFIG' not set; checking the default config file path")
-		configFilePath, err = packer.ConfigFile()
+		configFilePath, err = pathing.ConfigFile()
 		if err != nil {
 			log.Printf("Error detecting default config file path: %s", err)
 		}
